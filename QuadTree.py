@@ -73,17 +73,21 @@ class QuadTree:
                 node = node.NW                                    
             else :                                           # Go to SW region
                 node = node.SW
+        return None
 
 
-
-
-
-    #def searchNode(self, point):
-    #def makeQT(self, points):
-    #def deleteNode(self):
-    #def balanceQT(self):
-    #def getDepth():
-    #def searchRegion():
+    def makeOptQT(self, points):
+        points.sort()
+        def median(x):
+            if x % 2 == 0 : # x is even
+                return (x/2 + x/2 + 1)/2
+            else :
+                return (x + 1)/2
+        while len(points) != 0 :
+            point = points[median(len(points))-1]  # Extract median point
+            self.insertNode(point)
+            points.remove(points[median(len(points))-1])
+        return self.root
     
     
 
