@@ -24,7 +24,7 @@ class QuadTree:
         """Insert point into this quad tree."""
         new_node = QTNode(newPoint, self.nodeNum)
         if self.root is None :
-            self.root = new_node
+            self.root = new_node            
         else :
             node = self.root
             while True :
@@ -92,7 +92,7 @@ class QuadTree:
         self.insertNode(point)
         points.remove(points[median(len(points))-1])
 
-        # Make sub region's point list
+        # Make sub region's point list and recursive call
         NE_points = [x for x in points if x[0] >= point[0] and x[1] >= point[1]] 
         SE_points = [x for x in points if x[0] >= point[0] and x[1] < point[1]]  
         NW_points = [x for x in points if x[0] < point[0] and x[1] >= point[1]]  
@@ -101,7 +101,7 @@ class QuadTree:
         self.makeOptQT(SE_points)      
         self.makeOptQT(NW_points)
         self.makeOptQT(SW_points)
-    
+
 
 if __name__ == '__main__':
     
