@@ -77,18 +77,28 @@ class QuadTree:
 
 
     def makeOptQT(self, points):
-        points.sort()
+        """Make a balanced quad tree from the point list."""
         def median(x):
             if x % 2 == 0 : # x is even
                 return (x/2 + x/2 + 1)/2
-            else :
+            else :          # x is odd 
                 return (x + 1)/2
-        while len(points) != 0 :
-            point = points[median(len(points))-1]  # Extract median point
-            self.insertNode(point)
-            points.remove(points[median(len(points))-1])
-        return self.root
-    
+            
+        if len(points) == 0 : return
+        points.sort()
+        point = points[median(len(points))-1]  # Extract median point 
+        self.insertNode(point)
+        points.remove(points[median(len(points))-1])
+
+        # Make sub region's point list
+        NE_points =
+        SE_points = 
+        NW_points = 
+        SW_points = 
+        makeOptQT(NE_points)
+        makeOptQT(SE_points)        
+        makeOptQT(NW_points)
+        makeOptQT(SW_points)
     
 
 if __name__ == '__main__':
@@ -96,5 +106,3 @@ if __name__ == '__main__':
     qtree = QuadTree()
     qtree.insertNode((0, 0))
     qtree.insertNode((1, 2))
-
-    
