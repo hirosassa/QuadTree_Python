@@ -24,7 +24,7 @@ class QuadTree:
         """Insert point into this quad tree."""
         new_node = QTNode(newPoint, self.nodeNum)
         if self.root is None :
-            self.root = new_node
+            self.root = new_node            
         else :
             node = self.root
             while True :
@@ -76,6 +76,7 @@ class QuadTree:
         return None
 
 
+<<<<<<< HEAD
     def makeOptQT(self, points):
         """Make a balanced quad tree from the point list."""
         def median(x):
@@ -99,6 +100,17 @@ class QuadTree:
         makeOptQT(SE_points)        
         makeOptQT(NW_points)
         makeOptQT(SW_points)
+=======
+    #def balanceQT(self, )    
+
+
+    #def makeQT(self, points):
+    #def deleteNode(self):
+    #def balanceQT(self):
+    #def getDepth():
+    #def searchRegion():
+    
+>>>>>>> a
     
 
 if __name__ == '__main__':
