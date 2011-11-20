@@ -76,9 +76,14 @@ class QuadTree:
         return None
 
 
+<<<<<<< HEAD
     def makeOptQT(self, lst):
         """Generate a balanced quad tree from the point list."""
         
+=======
+    def makeOptQT(self, points):
+        """Generate a balanced quad tree from the point list."""
+>>>>>>> some problem fixed
         def median(x):
             if x % 2 == 0 : # x is even
                 return (x/2 + x/2 + 1)/2
@@ -92,6 +97,7 @@ class QuadTree:
         self.insertNode(point)
         points.remove(points[median(len(points))-1])
 
+<<<<<<< HEAD
         # Make sub region's point list and recursive call
         NE_points = [x for x in points if x[0] >= point[0] and x[1] >= point[1]] 
         SE_points = [x for x in points if x[0] >= point[0] and x[1] < point[1]]  
@@ -102,10 +108,30 @@ class QuadTree:
         self.makeOptQT(NW_points)
         self.makeOptQT(SW_points)
 
+=======
 
+        # Make sub region's point list
+        NE_points = [points]
+        SE_points = [points]
+        NW_points = [points]
+        SW_points = [points]
+        makeOptQT(NE_points)
+        makeOptQT(SE_points)        
+        makeOptQT(NW_points)
+        makeOptQT(SW_points)
+>>>>>>> some problem fixed
+
+    #def deleteNode(self, points):
+    #def showTree(self):
+    
 if __name__ == '__main__':
     
     qtree = QuadTree()
+<<<<<<< HEAD
     lst = [(0,0), (-1,-2), (-3,4), (2,-5), (1,4), (-4,-6), (3,5), (2,2), (-4,1), (1, -10)]
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
+=======
+    lst = [(0,0), (1,2), (-2,-1), (-1,1), (1,-3)]
+    qtree.makeOptQT(lst)
+>>>>>>> some problem fixed
