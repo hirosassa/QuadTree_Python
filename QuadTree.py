@@ -103,9 +103,41 @@ class QuadTree:
         self.makeOptQT(SW_points)
 
 
+    def deleteNode(self, point):
+        node = searchNode(self, point)
+        if  node is None:
+            print "There is no such a node (", point[0], ", ", point[1], ")."
+            return None
+        
+        def conj(x):
+            return ((x + 1) % 4) + 1
+
+        def adjRegion(x):
+            return ()
+
+        def isinCrosshatched(node, center, rp):
+            ru = (max(center[0], rp[0]), max(center[1], rp[1]))
+            ld = (min(center[0], rp[0]), min(center[1], rp[1]))
+            return 
+        
+        def findCandidate(self, node):
+            del_node = node
+            cand_list = [] 
+            for i in range(1,5):
+                candidate = del_node.i
+                while candidates:
+                    candidate = candidates.conj(i)
+                cand_list.append(candidate)
+
+            for
+                    
+
+                            
+                
 if __name__ == '__main__':
     
     qtree = QuadTree()
     lst = [(0,0), (-1,-2), (-3,4), (2,-5), (1,4), (-4,-6), (3,5), (2,2), (-4,1), (1, -10)]
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
+    
