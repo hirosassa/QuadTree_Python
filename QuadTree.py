@@ -129,15 +129,15 @@ class QuadTree:
                     candidate = candidates.conj(i)
                 cand_list.append(candidate)
 
-            for
-                    
+            for                
 
                             
-                
+    
 if __name__ == '__main__':
     
     qtree = QuadTree()
     lst = [(0,0), (-1,-2), (-3,4), (2,-5), (1,4), (-4,-6), (3,5), (2,2), (-4,1), (1, -10)]
+    qtree.makeOptQT(lst)
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
-    
+
