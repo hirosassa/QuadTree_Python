@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+class Rect:
+    def __init__(self, pt1, pt2): 
+        self.topright   = (max(pt1[0], pt2[0]), max(pt1[1], pt2[1]))
+        self.bottomleft = (min(pt1[0], pt2[0]), min(pt1[1], pt2[1]))
+         
 class QTNode:
     def __init__(self, point, label):
-        self.label = label
-        self.x = point[0]
-        self.y = point[1]
-        self.NW = None
-        self.NE = None
-        self.SW = None
-        self.SE = None
-        self.Parent = None
-            
+         self.label  = label
+         self.x      = point[0]
+         self.y      = point[1]
+         self.NW     = None
+         self.NE     = None
+         self.SW     = None
+         self.SE     = None
+         self.Parent = None
+             
 class QuadTree:
     """
     Simple point quad tree implementaion.
@@ -77,6 +82,8 @@ class QuadTree:
 
     def searchRegion(self, region):
         """Return the nodes which is in the region or None otherwise."""
+        hits =
+        return hits
         
 
     def makeOptQT(self, lst):
@@ -159,9 +166,28 @@ class QuadTree:
             return replace
 
 
-        def ADJ(self, subroot, replace, delete):
+        def ADJ(self, node, delete, replace):
+            if node is None : return
+            
+            if not isinCrosshatched(node, delete, replace) :
+                if node.x >= delete.x and node.y >= delete.y :  # node is in NE region.
+                    ADJ(node.SW, delete, replace)
+                    ADJ(node.SE, delete, replace)
+                elif node.x >= delete.x and node.y < delete.y : # node is in SE region.
+                    ADJ(node.SW, delete, replace)
+                    ADJ(node.SE, delete, replace)
+                elif node.x < delete.x and node.y >= delete.y : # node is in NW region.
+                    ADJ(node.SW, delete, replace)
+                    ADJ(node.SE, delete, replace)
+                else :                                          # node is in SW region
+                    ADJ(node.SW, delete, replace)
+                    ADJ(node.SE, delete, replace)
+                    
             
             
+
+
+                    
         def newRoot(self,):
         
     #def showTree(self):
