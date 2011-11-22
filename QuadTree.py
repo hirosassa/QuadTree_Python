@@ -104,6 +104,7 @@ class QuadTree:
 
 
     def deleteNode(self, point):
+<<<<<<< HEAD
         node = searchNode(self, point)
         if  node is None:
             print "There is no such a node (", point[0], ", ", point[1], ")."
@@ -132,6 +133,55 @@ class QuadTree:
             for                
 
                             
+=======
+        """Delete point in the quad tree."""
+
+        def conj(direction):
+            return (direction + 1) % 4 + 1
+        
+        def adjRegion(direction):
+            return (5 - direction, (6 - direction) % 4 + 1)
+
+        
+        def findCandidate(self, point):
+            node = self.searchNode(point)
+            if node is None:
+                print "No such a node (" point[0], ", ", point[1],")."
+                return
+            
+            result = []
+            for i in [NE, NW, SW, SE]:   # Traverse quadrant order
+                candidate = node.i
+                while candidate:
+                    candidate = candidate.conj(i)
+                result.append(candidate)
+            
+            accept = []
+            for i in range(1,5):
+                (tmp_x, tmp_y) = adjRegion(i)
+                if abs(node.x - result[i].x) < abs(node.x - result[tmp_x].x) and abs(node.y - result[i].y) < abs(node.y - result[tmp_y].y):
+                    accept.append(result[i])
+
+            l1 = float("inf")
+            for i in accept:
+                if l1 > abs(node.x - i.x) + abs(node.y - i.y) :
+                    l1 = abs(node.x - i.x) + abs(node.y - i.y) 
+                    replace = (i.x, i.y)
+                    
+            return replace
+
+
+        def isInCrosshatched(point, center, region_point):
+            ru = (max(center[0], region_point[0]), max(center[1], region_point[1]))
+            ld = (min(center[0], region_point[0]), min(center[1], region_point[1]))
+            return (ld[0] < point[0] and point[0] < ru[0]) or (ld[1] < point[1] and point[1] < ru[1])
+
+
+        def ADJ(self, subroot, replace, delete):
+        def newRoot(self,):
+        
+    #def showTree(self):
+>>>>>>> add deletion fuction (on going)
     
 if __name__ == '__main__':
     
@@ -140,4 +190,7 @@ if __name__ == '__main__':
     qtree.makeOptQT(lst)
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
+<<<<<<< HEAD
 
+=======
+>>>>>>> add deletion fuction (on going)
