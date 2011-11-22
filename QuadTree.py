@@ -75,6 +75,9 @@ class QuadTree:
                 node = node.SW
         return None
 
+    def searchRegion(self, region):
+        """Return the nodes which is in the region or None otherwise."""
+        
 
     def makeOptQT(self, lst):
         """Generate a balanced quad tree from the point list."""
@@ -104,84 +107,65 @@ class QuadTree:
 
 
     def deleteNode(self, point):
-<<<<<<< HEAD
+        """Delete point in the quad tree."""
+        
         node = searchNode(self, point)
         if  node is None:
             print "There is no such a node (", point[0], ", ", point[1], ")."
             return None
-        
-        def conj(x):
-            return ((x + 1) % 4) + 1
-
-        def adjRegion(x):
-            return ()
-
-        def isinCrosshatched(node, center, rp):
-            ru = (max(center[0], rp[0]), max(center[1], rp[1]))
-            ld = (min(center[0], rp[0]), min(center[1], rp[1]))
-            return 
-        
-        def findCandidate(self, node):
-            del_node = node
-            cand_list = [] 
-            for i in range(1,5):
-                candidate = del_node.i
-                while candidates:
-                    candidate = candidates.conj(i)
-                cand_list.append(candidate)
-
-            for                
-
-                            
-=======
-        """Delete point in the quad tree."""
 
         def conj(direction):
+            """Calculate opposite direction of input."""
             return (direction + 1) % 4 + 1
         
         def adjRegion(direction):
-            return (5 - direction, (6 - direction) % 4 + 1)
-
+            """Calculate adjacent regions of input.Return value format is (previous, next)"""
+            return ((direction + 2) % 4 + 1, direction % 4 + 1)
         
+        def isinCrosshatched(point, center, region_point):
+            ru = (max(center.x, region_point.x), max(center.y, region_point.y))
+            ld = (min(center.x, region_point.x), min(center.y, region_point.y))
+            return (ld[0] < point.x and point.x < ru[0]) \
+                   or (ld[1] < point.y and point.y < ru[1])
+
         def findCandidate(self, point):
             node = self.searchNode(point)
             if node is None:
                 print "No such a node (" point[0], ", ", point[1],")."
                 return
             
-            result = []
-            for i in [NE, NW, SW, SE]:   # Traverse quadrant order
+            cand_list = [] 
+            for i in [NE, NW, SW, SE]: # Select candidates in the each region.
                 candidate = node.i
                 while candidate:
                     candidate = candidate.conj(i)
-                result.append(candidate)
+                cand_list.append(candidate)
             
             accept = []
-            for i in range(1,5):
-                (tmp_x, tmp_y) = adjRegion(i)
-                if abs(node.x - result[i].x) < abs(node.x - result[tmp_x].x) and abs(node.y - result[i].y) < abs(node.y - result[tmp_y].y):
+            for i in range(1,5):    # Filter candidates by 
+                (prev, next) = adjRegion(i)
+                if not isinCrosshatched(next, node, cand_list[i]) \
+                       and not isinCrosshatched(prev, node, cand_list[i]) :
                     accept.append(result[i])
 
-            l1 = float("inf")
-            for i in accept:
-                if l1 > abs(node.x - i.x) + abs(node.y - i.y) :
-                    l1 = abs(node.x - i.x) + abs(node.y - i.y) 
+            if len(accept) == 0 : accept = cand_list[:]
+            minimum = float("inf")
+            for i in accept:           # Filter candidates by L1 distance from delete node
+                l1 = abs(node.x - i.x) + abs(node.y - i.y)
+                if minimum > l1 :
+                    minimum = l1
                     replace = (i.x, i.y)
                     
             return replace
 
 
-        def isInCrosshatched(point, center, region_point):
-            ru = (max(center[0], region_point[0]), max(center[1], region_point[1]))
-            ld = (min(center[0], region_point[0]), min(center[1], region_point[1]))
-            return (ld[0] < point[0] and point[0] < ru[0]) or (ld[1] < point[1] and point[1] < ru[1])
-
-
         def ADJ(self, subroot, replace, delete):
+            
+            
         def newRoot(self,):
         
     #def showTree(self):
->>>>>>> add deletion fuction (on going)
+
     
 if __name__ == '__main__':
     
@@ -190,7 +174,3 @@ if __name__ == '__main__':
     qtree.makeOptQT(lst)
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
-<<<<<<< HEAD
-
-=======
->>>>>>> add deletion fuction (on going)
