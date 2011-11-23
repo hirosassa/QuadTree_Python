@@ -1,21 +1,63 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+import matplotlib.pyplot as plt
+
+
 class Rect:
     def __init__(self, pt1, pt2): 
         self.topright   = (max(pt1[0], pt2[0]), max(pt1[1], pt2[1]))
         self.bottomleft = (min(pt1[0], pt2[0]), min(pt1[1], pt2[1]))
+
          
 class QTNode:
     def __init__(self, point, label):
          self.label  = label
          self.x      = point[0]
          self.y      = point[1]
-         self.NW     = None
          self.NE     = None
+         self.NW     = None
          self.SW     = None
          self.SE     = None
          self.Parent = None
-             
+
+    def coordinates(self):
+        return (self.x, self.y)
+        
+    def regionToNum(region):
+        if   region == "NE" : return 1
+        elif region == "NW" : return 2
+        elif region == "SW" : return 3
+        else :                return 4
+
+    def numToRegion(num):
+        if   num == 1 : return "NE"
+        elif num == 2 : return "NW"
+        elif num == 3 : return "SW"
+        else :          return "SE"
+
+    def nodeDirection(self, from_node):
+        """Calculate direction to node from from_node"""
+        if self.x >= from_node.x and self.y >= from_node.y :
+            return "NE"
+        elif self.x >= from_node.x and self.y < from_node.y :
+            return "SE"
+        elif self.x < from_node.x and self.y >= from_node.y :
+            return "NW"
+        else :
+            return "SW"
+
+    def conj(direction):
+        """Calculate opposite direction of input."""
+        reNum = regionToNum(direction)
+        return numToRegion((reNum + 1) % 4 + 1)
+        
+    def adjRegion(direction):
+        """Calculate adjacent regions of input. Return value format is (previous, next)"""
+        reNum = regionToNum(direction)
+        return (numToRegion((reNum + 2) % 4 + 1), numToRegion(reNum % 4 + 1))
+
+    
 class QuadTree:
     """
     Simple point quad tree implementaion.
@@ -59,7 +101,6 @@ class QuadTree:
                     node = node.SW
         self.nodeNum += 1
         return new_node
-                    
     
     def searchNode(self, point):
         """
@@ -80,12 +121,11 @@ class QuadTree:
                 node = node.SW
         return None
 
-    def searchRegion(self, region):
-        """Return the nodes which is in the region or None otherwise."""
-        hits =
-        return hits
+    # def searchRegion(self, region):
+    #     """Return the nodes which is in the region or None otherwise."""
+    #     hits =
+    #     return hits
         
-
     def makeOptQT(self, lst):
         """Generate a balanced quad tree from the point list."""
         
@@ -95,7 +135,7 @@ class QuadTree:
             else :          # x is odd 
                 return (x + 1)/2
 
-        points = lst[:]     # copy the list of points 
+        points = lst[:]
         if len(points) == 0 : return
         points.sort()
         point = points[median(len(points))-1]  # Extract median point 
@@ -112,31 +152,21 @@ class QuadTree:
         self.makeOptQT(NW_points)
         self.makeOptQT(SW_points)
 
-
     def deleteNode(self, point):
         """Delete point in the quad tree."""
         
-        node = searchNode(self, point)
-        if  node is None:
+        delete = searchNode(self, point)
+        if  delete is None:
             print "There is no such a node (", point[0], ", ", point[1], ")."
             return None
-
-        def conj(direction):
-            """Calculate opposite direction of input."""
-            return (direction + 1) % 4 + 1
-        
-        def adjRegion(direction):
-            """Calculate adjacent regions of input. Return value format is (previous, next)"""
-            return ((direction + 2) % 4 + 1, direction % 4 + 1)
-        
+            
         def isinCrosshatched(point, center, region_point):
             ru = (max(center.x, region_point.x), max(center.y, region_point.y))
             ld = (min(center.x, region_point.x), min(center.y, region_point.y))
             return (ld[0] < point.x and point.x < ru[0]) \
                    or (ld[1] < point.y and point.y < ru[1])
 
-        def findCandidate(self, point):
-            node = self.searchNode(point)          
+        def findCandidate(node):
             cand_list = [] 
             for i in [NE, NW, SW, SE]: # Select candidates in the each region.
                 candidate = node.i
@@ -161,7 +191,7 @@ class QuadTree:
                     
             return replace
 
-        def ADJ(self, node, delete, replace, re_insert):
+        def ADJ(node, delete, replace, re_insert):
             if node is None : return
             if isinCrosshatched(node, delete, replace) :
                 re_insert.append(node)
@@ -172,29 +202,42 @@ class QuadTree:
                     ADJ(node.SW, delete, replace, re_insert)
                     ADJ(node.SE, delete, replace, re_insert)
                 elif node.y < delete.y and replace.y < delete.y :
-                    # Both "node" and "replace" are in the nogative side of x-axis of delete node                    
+                    # Both "node" and "replace" are in the nogative side of x-axis of delete node
                     ADJ(node.NW, delete, replace, re_insert)
                     ADJ(node.NE, delete, replace, re_insert)
                 elif node.x >= delete.x and replace.x >= delete.x :
-                    # Both "node" and "replace" are in the positive side of y-axis of delete node                    
+                    # Both "node" and "replace" are in the positive side of y-axis of delete node
                     ADJ(node.NW, delete, replace, re_insert)
                     ADJ(node.SW, delete, replace, re_insert)
                 else :
-                    # Both "node" and "replace" are in the negative side of y-axis of delete node                    
+                    # Both "node" and "replace" are in the negative side of y-axis of delete node
                     ADJ(node.NE, delete, replace, re_insert)
                     ADJ(node.SE, delete, replace, re_insert)
 
-        def newRoot(self,):
-            
-            
+        def newRoot(delete, replace, direction):
+            (prev, next) = adjRegion(direction)
+            re_insert = []
+            ADJ(replace.prev, delete, replace, re_insert)
+            ADJ(replace.next, delete, replace, re_insert)
+
+        candidate = self.findCandidate(delete)
+        #(prev, next) = adjRegion()
+        
         
     #def showTree(self):
 
     
 if __name__ == '__main__':
+    import numpy as np
+
+    
+    nodeNum = 10
+    x = np.random.randint(-10, 10, nodeNum)
+    y = np.random.randint(-10, 10, nodeNum)
+    lst = [(x[i], y[i]) for i in range(nodeNum)]
     
     qtree = QuadTree()
-    lst = [(0,0), (-1,-2), (-3,4), (2,-5), (1,4), (-4,-6), (3,5), (2,2), (-4,1), (1, -10)]
     qtree.makeOptQT(lst)
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
+    
