@@ -126,7 +126,7 @@ class QuadTree:
             return (direction + 1) % 4 + 1
         
         def adjRegion(direction):
-            """Calculate adjacent regions of input.Return value format is (previous, next)"""
+            """Calculate adjacent regions of input. Return value format is (previous, next)"""
             return ((direction + 2) % 4 + 1, direction % 4 + 1)
         
         def isinCrosshatched(point, center, region_point):
@@ -136,11 +136,7 @@ class QuadTree:
                    or (ld[1] < point.y and point.y < ru[1])
 
         def findCandidate(self, point):
-            node = self.searchNode(point)
-            if node is None:
-                print "No such a node (" point[0], ", ", point[1],")."
-                return
-            
+            node = self.searchNode(point)          
             cand_list = [] 
             for i in [NE, NW, SW, SE]: # Select candidates in the each region.
                 candidate = node.i
@@ -149,7 +145,7 @@ class QuadTree:
                 cand_list.append(candidate)
             
             accept = []
-            for i in range(1,5):    # Filter candidates by 
+            for i in range(1,5):    # Filter candidates whether other candidate is in crosshatched region or not
                 (prev, next) = adjRegion(i)
                 if not isinCrosshatched(next, node, cand_list[i]) \
                        and not isinCrosshatched(prev, node, cand_list[i]) :
@@ -165,30 +161,32 @@ class QuadTree:
                     
             return replace
 
-
-        def ADJ(self, node, delete, replace):
+        def ADJ(self, node, delete, replace, re_insert):
             if node is None : return
-            
-            if not isinCrosshatched(node, delete, replace) :
-                if node.x >= delete.x and node.y >= delete.y :  # node is in NE region.
-                    ADJ(node.SW, delete, replace)
-                    ADJ(node.SE, delete, replace)
-                elif node.x >= delete.x and node.y < delete.y : # node is in SE region.
-                    ADJ(node.SW, delete, replace)
-                    ADJ(node.SE, delete, replace)
-                elif node.x < delete.x and node.y >= delete.y : # node is in NW region.
-                    ADJ(node.SW, delete, replace)
-                    ADJ(node.SE, delete, replace)
-                else :                                          # node is in SW region
-                    ADJ(node.SW, delete, replace)
-                    ADJ(node.SE, delete, replace)
-                    
-            
-            
+            if isinCrosshatched(node, delete, replace) :
+                re_insert.append(node)
+                return
+            else:
+                if node.y >= delete.y and replace.y >= delete.y:
+                    # Both "node" and "replace" are in the positive side of x-axis of delete node
+                    ADJ(node.SW, delete, replace, re_insert)
+                    ADJ(node.SE, delete, replace, re_insert)
+                elif node.y < delete.y and replace.y < delete.y :
+                    # Both "node" and "replace" are in the nogative side of x-axis of delete node                    
+                    ADJ(node.NW, delete, replace, re_insert)
+                    ADJ(node.NE, delete, replace, re_insert)
+                elif node.x >= delete.x and replace.x >= delete.x :
+                    # Both "node" and "replace" are in the positive side of y-axis of delete node                    
+                    ADJ(node.NW, delete, replace, re_insert)
+                    ADJ(node.SW, delete, replace, re_insert)
+                else :
+                    # Both "node" and "replace" are in the negative side of y-axis of delete node                    
+                    ADJ(node.NE, delete, replace, re_insert)
+                    ADJ(node.SE, delete, replace, re_insert)
 
-
-                    
         def newRoot(self,):
+            
+            
         
     #def showTree(self):
 
