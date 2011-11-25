@@ -20,7 +20,13 @@ class QTNode:
 
     def coordinates(self):
         return (self.x, self.y)
-        
+
+    def access(self, region):
+        if   region == "NE": return self.NE
+        elif region == "NW": return self.NW
+        elif region == "SW": return self.SW
+        else:                return self.SE
+
     def regionToNum(region):
         if   region == "NE": return 1
         elif region == "NW": return 2
@@ -166,9 +172,9 @@ class QuadTree:
         def findCandidate(node):
             cand_list = [] 
             for i in ["NE", "NW", "SW", "SE"]: # Select candidates in the each region.
-                candidate = node.i
+                candidate = node.access(i)
                 while candidate:
-                    candidate = candidate.conj(i)
+                    candidate = candidate.access(conj(i))
                 cand_list.append(candidate)            
             accept = []
             for i in range(1,5):    # Filter candidates whether other candidate is in crosshatched region or not
@@ -231,7 +237,9 @@ class QuadTree:
         newRoot(delete, candidate, cand_direction, re_insert)
 
         for quadrant in ["NE", "NW", "SW", "SE"]: # Replace delete node with replacing node
-            candidate.quadrant = delete.quadrant
+            candidate.access(quadrant) = delete.access(quadrant)
+            replacing = delete.access(quadrant)
+            
         self.root = candidate
         for node in re_insert:                    # Reinsertion
             self.insertNode(node)
