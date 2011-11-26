@@ -154,7 +154,6 @@ class QuadTree:
                     if candidate.region[conj(i)] is None: break
                     candidate = candidate.region[conj(i)]
                 cand_list.append(candidate)
-            print cand_list
             accept = []
             for i in range(1,5):    # Filter candidates whether other candidate is in crosshatched region or not
                 if cand_list[i-1] is None: pass #error routine
@@ -200,7 +199,7 @@ class QuadTree:
             ADJ(subroot.region[prev], delete, replace, re_insert)
             ADJ(subroot.region[next], delete, replace, re_insert)
             if subroot.region[conj(rep_region)] == None:
-                re_insert.append(subroot.region[rep_region])
+                subroot.Parent.region[conj(rep_region)] = subroot.region[rep_region]
                 subroot.region[rep_region] = None
                 return
             newRoot(subroot.region[conj(rep_region)], delete, replace, rep_region, re_insert)
@@ -224,7 +223,7 @@ class QuadTree:
         for node in re_insert:    # Reinsertion
             self.insertNode(node)
         
-    #def showTree(self):
+    def showTree(self):
     
 if __name__ == '__main__':
     import numpy as np                            
