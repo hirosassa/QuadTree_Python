@@ -38,10 +38,14 @@ class QuadTree:
     def __init__(self):
         self.root = None
         self.nodeNum = 0
-                        
+        
     def insertNode(self, newPoint):
-        """Insert point into this quad tree."""        
-        new_node = QTNode(newPoint, self.nodeNum)
+        """Insert point into this quad tree."""
+        if isinstance(newPoint, tuple):
+            new_node = QTNode(newPoint, self.nodeNum)
+            self.nodeNum += 1
+        else: new_node = newPoint  # newPoint is already existing node (re-insertion).
+        
         if self.root is None:
             self.root = new_node            
         else:
@@ -71,9 +75,19 @@ class QuadTree:
                         new_node.Parent = node
                         break
                     node = node.region[3]
-        self.nodeNum += 1
         return new_node
-    
+
+    def reinsertSubtree(self,subroot):
+        """Reinsert entire subtree into the quadtree."""
+        stack = []
+        stack.append(subroot)
+        while len(stack) != 0:
+            node = pop.stack
+            for i in range(1,5):
+                stack.append(node.region[i])
+                node.region[i] = None       # delete reference
+            self.insertNode(node)
+        
     def searchNode(self, point):
         """
         Return the node for coordinates if the node is in the quad tree,
@@ -123,7 +137,7 @@ class QuadTree:
         self.makeOptQT(SE_points)      
         self.makeOptQT(NW_points)
         self.makeOptQT(SW_points)
-
+        
     def deleteNode(self, point):
         """Delete point in the quad tree."""
         
@@ -174,6 +188,8 @@ class QuadTree:
         def ADJ(node, delete, replace, re_insert):
             if node is None : return
             if isinCrosshatched(node, delete, replace):
+                direction = node.Parent.nodeDirection(node)
+                node.Parent.region[direction] = None  # delete parent's reference
                 re_insert.append(node)
                 return
             else:
@@ -203,7 +219,6 @@ class QuadTree:
                 subroot.region[rep_region] = None
                 return
             newRoot(subroot.region[conj(rep_region)], delete, replace, rep_region, re_insert)
-
                         
         candidate = findCandidate(delete)
         if candidate is None:
@@ -219,11 +234,9 @@ class QuadTree:
         for i in range(1,5):      # Replace delete node with candidate node
             candidate.region[i] = delete.region[i]
         candidate.Parent = delete.Parent
-        
-        for node in re_insert:    # Reinsertion
-            self.insertNode(node)
-        
-    def showTree(self):
+
+        for node in re_insert:    # Reinsertion sub-tree
+            self.reinsertSubtree(node)
     
 if __name__ == '__main__':
     import numpy as np                            
