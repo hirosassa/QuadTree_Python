@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class Rect:
-    def __init__(self, pt1, pt2): 
-        self.topright   = (max(pt1[0], pt2[0]), max(pt1[1], pt2[1]))
-        self.bottomleft = (min(pt1[0], pt2[0]), min(pt1[1], pt2[1]))
-
-         
 class QTNode:
     def __init__(self, point, label):
          self.label  = label
