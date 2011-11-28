@@ -33,7 +33,7 @@ class QTNode:
 class QuadTree:
     """
     Simple point quad tree implementaion.
-    This quad tree supports insert, and searchNode operations.
+    This quad tree supports insert, and searchNode, deleteNode operations.
     """
     def __init__(self):
         self.root = None
@@ -84,8 +84,10 @@ class QuadTree:
         while len(stack) != 0:
             node = pop.stack
             for i in range(1,5):
-                stack.append(node.region[i])
-                node.region[i] = None       # delete reference
+                if node.region[i] is None: pass
+                else:
+                    stack.append(node.region[i])
+                    node.region[i] = None       # delete reference
             self.insertNode(node)
         
     def searchNode(self, point):
@@ -145,6 +147,13 @@ class QuadTree:
         if  delete is None:
             print "There is no such a node" , (point[0], point[1]), "."
             return None
+
+        if (delete.region[1] is None) and (delete.region[2] is None)\
+           and (delete.region[3] is None) and (delete.region[4] is None):   # delete node is a leaf.
+               direction = delete.nodeDirection(delete.Parent)
+               delete.Parent.region[direction] = None
+               return 
+    
         def conj(region):
             """Calculate opposite region of input."""
             return (region + 1) % 4 + 1
@@ -218,7 +227,9 @@ class QuadTree:
                 subroot.Parent.region[conj(rep_region)] = subroot.region[rep_region]
                 subroot.region[rep_region] = None
                 return
-            newRoot(subroot.region[conj(rep_region)], delete, replace, rep_region, re_insert)
+            newRoot(subroot.region[conj(rep_region)], delete,
+                    replace, rep_region, re_insert)
+
                         
         candidate = findCandidate(delete)
         if candidate is None:
@@ -229,7 +240,8 @@ class QuadTree:
         re_insert = []
         ADJ(delete.region[prev], delete, candidate, re_insert)
         ADJ(delete.region[next], delete, candidate, re_insert)
-        newRoot(delete.region[candidate.nodeDirection(delete)], delete, candidate, candidate.nodeDirection(delete), re_insert)
+        newRoot(delete.region[candidate.nodeDirection(delete)], delete,
+                candidate, candidate.nodeDirection(delete), re_insert)
 
         for i in range(1,5):      # Replace delete node with candidate node
             candidate.region[i] = delete.region[i]
