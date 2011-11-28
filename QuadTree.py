@@ -96,10 +96,10 @@ class QuadTree:
             if point[0] == node.x and point[1] == node.y:   # Find!!
                 return node
             elif point[0] >= node.x and point[1] >= node.y: # Go to NE region
-                node = node.region[1]
-            elif point[0] >= node.x and point[1] < node.y:  # Go to SE region
-                node = node.region[4]
+                node = node.region[0]
             elif point[0] < node.x and point[1] >= node.y:  # Go to NW region
+                node = node.region[1]
+            elif point[0] < node.x and point[1] < node.y:   # Go to SW region
                 node = node.region[2]
             else :                                          # Go to SW region
                 node = node.region[3]
@@ -144,8 +144,8 @@ class QuadTree:
             print "There is no such a node" , (point[0], point[1]), "."
             return None
 
-        if (delete.region[1] is None) and (delete.region[2] is None)\
-           and (delete.region[3] is None) and (delete.region[4] is None):   # delete node is a leaf.
+        if (delete.region[0] is None) and (delete.region[1] is None)\
+           and (delete.region[2] is None) and (delete.region[3] is None):   # delete node is a leaf.
                direction = delete.nodeDirection(delete.Parent)
                delete.Parent.region[direction] = None
                return 
@@ -203,20 +203,20 @@ class QuadTree:
             else:
                 if node.y >= delete.y and replace.y >= delete.y:
                     # Both "node" and "replace" are in the positive side of x-axis of delete node
+                    ADJ(node.region[2], delete, replace, re_insert)
                     ADJ(node.region[3], delete, replace, re_insert)
-                    ADJ(node.region[4], delete, replace, re_insert)
                 elif node.y < delete.y and replace.y < delete.y:
                     # Both "node" and "replace" are in the nogative side of x-axis of delete node
-                    ADJ(node.region[2], delete, replace, re_insert)
+                    ADJ(node.region[0], delete, replace, re_insert)
                     ADJ(node.region[1], delete, replace, re_insert)
                 elif node.x >= delete.x and replace.x >= delete.x:
                     # Both "node" and "replace" are in the positive side of y-axis of delete node
+                    ADJ(node.region[1], delete, replace, re_insert)
                     ADJ(node.region[2], delete, replace, re_insert)
-                    ADJ(node.region[3], delete, replace, re_insert)
                 else:
                     # Both "node" and "replace" are in the negative side of y-axis of delete node
-                    ADJ(node.region[1], delete, replace, re_insert)
-                    ADJ(node.region[4], delete, replace, re_insert)
+                    ADJ(node.region[0], delete, replace, re_insert)
+                    ADJ(node.region[3], delete, replace, re_insert)
 
         def newRoot(subroot, delete, replace, rep_region, re_insert):
             (prev, next) = adjRegion(rep_region)

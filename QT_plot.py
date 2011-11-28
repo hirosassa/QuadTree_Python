@@ -44,11 +44,20 @@ if __name__ == "__main__":
     
     from QuadTree import QuadTree as QT
 
-    nodeNum = 100
+    nodeNum = 500
     
     # Generate random numbers from discrete uniform distribution.
-    x = np.random.random_integers(-100, 100, nodeNum)
-    y = np.random.random_integers(-100, 100, nodeNum)
+    # x = np.random.random_integers(-100, 100, nodeNum)
+    # y = np.random.random_integers(-100, 100, nodeNum)
+
+    # Generate random numbers from discrete standard normal distribution.
+    x = np.random.randint(-100, 100, nodeNum)
+    y = np.random.randint(-100, 100, nodeNum)
+
+    # Generate random numbers from normal distribution
+    # x = np.random.normal(0, 20, nodeNum)
+    # y = np.random.normal(0, 20, nodeNum)
+    
     lst = [(x[i], y[i]) for i in range(nodeNum)]
 
     qt = QT()
