@@ -38,7 +38,8 @@ class QuadTree:
         if isinstance(newPoint, tuple):
             new_node = QTNode(newPoint, self.nodeNum)
             self.nodeNum += 1
-        else: new_node = newPoint  # newPoint is already existing node (re-insertion).
+        else:
+            new_node = newPoint  # newPoint is already existing node (re-insertion).
         
         if self.root is None:
             self.root = new_node            
@@ -76,7 +77,7 @@ class QuadTree:
         stack = []
         stack.append(subroot)
         while len(stack) != 0:
-            node = pop.stack
+            node = stack.pop()
             for i in range(1,5):
                 if node.region[i] is None: pass
                 else:
