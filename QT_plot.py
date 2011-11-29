@@ -40,12 +40,27 @@ if __name__ == "__main__":
     from QuadTree import QuadTree as QT
 
     nodeNum = 10
-    x = np.random.random_integers(-100, 100, nodeNum)
-    y = np.random.random_integers(-100, 100, nodeNum)
+
+    #discrete uniform distribution
+    #x = np.random.random_integers(-100, 100, nodeNum)
+    #y = np.random.random_integers(-100, 100, nodeNum)
+
+    #discrete standard normal distribution
+    #x = np.random.randint(-100, 100, nodeNum)
+    #y = np.random.randint(-100, 100, nodeNum)
+
+    #normal distribution
+    x = np.random.normal(0, 13, nodeNum)
+    y = np.random.normal(0, 13, nodeNum)
 
     lst = [(x[i], y[i]) for i in range(nodeNum)]
     qt = QT()
     qt.makeOptQT(lst)
-    area = Rect((-100, -100), (100, 100))
-    QTdivision(qt,area)
     
+    area = Rect((max(x), max(y)), (min(x), min(y)))
+    # plt.subplot(211)
+    # QTdivision(qt,area)
+    
+    # plt.subplot(212)
+    qt.deleteNode(qt.root.coordinates())
+    QTdivision(qt,area)

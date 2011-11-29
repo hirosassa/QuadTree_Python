@@ -46,19 +46,19 @@ class QuadTree:
         else:
             node = self.root
             while True:
-                if newPoint[0] >= node.x and newPoint[1] >= node.y:   # NE region
+                if new_node.x >= node.x and new_node.y >= node.y:   # NE region
                     if node.region[1] is None:
                         node.region[1]= new_node
                         new_node.Parent = node
                         break
                     node = node.region[1]
-                elif newPoint[0] >= node.x and newPoint[1] < node.y:  # SE region
+                elif new_node.x >= node.x and new_node.y < node.y:  # SE region
                     if node.region[4] is None:
                         node.region[4]= new_node
                         new_node.Parent = node
                         break
                     node = node.region[4]
-                elif newPoint[0] < node.x and newPoint[1] >= node.y:  # NW region
+                elif new_node.x < node.x and new_node.y >= node.y:  # NW region
                     if node.region[2] is None:
                         node.region[2] = new_node
                         new_node.Parent = node
@@ -84,6 +84,7 @@ class QuadTree:
                     stack.append(node.region[i])
                     node.region[i] = None       # delete reference
             self.insertNode(node)
+
         
     def searchNode(self, point):
         """
