@@ -6,7 +6,7 @@ class QTNode:
          self.label  = label
          self.x      = point[0]
          self.y      = point[1]
-         self.region = [None, None, None, None, None]
+         self.region = [None, None, None, None]
          self.Parent = None
 
     def coordinates(self):
@@ -15,10 +15,10 @@ class QTNode:
     def nodeDirection(self, from_node):
         """Calculate direction to node from from_node"""
         if self.x >= from_node.x and self.y >= from_node.y:
-            return 1
-        elif self.x >= from_node.x and self.y < from_node.y:
-            return 4
+            return 0
         elif self.x < from_node.x and self.y >= from_node.y:
+            return 1
+        elif self.x < from_node.x and self.y < from_node.y:
             return 2
         else:
             return 3
@@ -42,29 +42,31 @@ class QuadTree:
             new_node = newPoint  # newPoint is already existing node (re-insertion).
         
         if self.root is None:
-            self.root = new_node            
+            self.root = new_node
+            new_node.Parent = self.root
         else:
             node = self.root
             while True:
-                if new_node.x >= node.x and new_node.y >= node.y:   # NE region
+
+                if new_node.x >= node.x and new_node.y >= node.y:  # NE region
+                    if node.region[0] is None:
+                        node.region[0]= new_node
+                        new_node.Parent = node
+                        break
+                    node = node.region[0]
+                elif new_node.x < node.x and new_node.y >= node.y: # NW region
                     if node.region[1] is None:
-                        node.region[1]= new_node
+                        node.region[1] = new_node
                         new_node.Parent = node
                         break
                     node = node.region[1]
-                elif new_node.x >= node.x and new_node.y < node.y:  # SE region
-                    if node.region[4] is None:
-                        node.region[4]= new_node
-                        new_node.Parent = node
-                        break
-                    node = node.region[4]
-                elif new_node.x < node.x and new_node.y >= node.y:  # NW region
+                elif new_node.x < node.x and new_node.y < node.y:  # SW region
                     if node.region[2] is None:
-                        node.region[2] = new_node
+                        node.region[2]= new_node
                         new_node.Parent = node
                         break
                     node = node.region[2]
-                else:                                                 # SW region
+                else:                                              # Se region
                     if node.region[3] is None:
                         node.region[3] = new_node
                         new_node.Parent = node
@@ -78,7 +80,7 @@ class QuadTree:
         stack.append(subroot)
         while len(stack) != 0:
             node = stack.pop()
-            for i in range(1,5):
+            for i in range(0,4):
                 if node.region[i] is None: pass
                 else:
                     stack.append(node.region[i])
@@ -96,10 +98,10 @@ class QuadTree:
             if point[0] == node.x and point[1] == node.y:   # Find!!
                 return node
             elif point[0] >= node.x and point[1] >= node.y: # Go to NE region
-                node = node.region[1]
-            elif point[0] >= node.x and point[1] < node.y:  # Go to SE region
-                node = node.region[4]
+                node = node.region[0]
             elif point[0] < node.x and point[1] >= node.y:  # Go to NW region
+                node = node.region[1]
+            elif point[0] < node.x and point[1] < node.y:   # Go to SW region
                 node = node.region[2]
             else :                                          # Go to SW region
                 node = node.region[3]
@@ -128,9 +130,9 @@ class QuadTree:
 
         # Make sub region's point list and recursive call
         NE_points = [x for x in points if x[0] >= point[0] and x[1] >= point[1]] 
-        SE_points = [x for x in points if x[0] >= point[0] and x[1] < point[1]]  
         NW_points = [x for x in points if x[0] < point[0] and x[1] >= point[1]]  
-        SW_points = [x for x in points if x[0] < point[0] and x[1] < point[1]]  
+        SW_points = [x for x in points if x[0] < point[0] and x[1] < point[1]]
+        SE_points = [x for x in points if x[0] >= point[0] and x[1] < point[1]]  
         self.makeOptQT(NE_points)
         self.makeOptQT(SE_points)      
         self.makeOptQT(NW_points)
@@ -144,19 +146,19 @@ class QuadTree:
             print "There is no such a node" , (point[0], point[1]), "."
             return None
 
-        if (delete.region[1] is None) and (delete.region[2] is None)\
-           and (delete.region[3] is None) and (delete.region[4] is None):   # delete node is a leaf.
+        if (delete.region[0] is None) and (delete.region[1] is None)\
+           and (delete.region[2] is None) and (delete.region[3] is None):   # delete node is a leaf.
                direction = delete.nodeDirection(delete.Parent)
                delete.Parent.region[direction] = None
                return 
     
         def conj(region):
             """Calculate opposite region of input."""
-            return (region + 1) % 4 + 1
+            return (region + 2) % 4
     
         def adjRegion(region):
             """Calculate adjacent regions of input. Return value format is (previous, next)"""
-            return ((region + 2) % 4 + 1, region % 4 + 1)
+            return ((region + 1) % 4, (region + 3) % 4)
 
         def isinCrosshatched(point, center, region_point):
             if point is None: return False
@@ -167,23 +169,26 @@ class QuadTree:
 
         def findCandidate(delete):
             cand_list = [] 
-            for i in range(1, 5): # Select candidates in the each region.
+            for i in range(0, 4):   # Select candidates in the each region.
                 candidate = delete.region[i]
                 while candidate:
                     if candidate.region[conj(i)] is None: break
                     candidate = candidate.region[conj(i)]
                 cand_list.append(candidate)
+                
             accept = []
-            for i in range(1,5):    # Filter candidates whether other candidate is in crosshatched region or not
-                if cand_list[i-1] is None: pass #error routine
+            for i in range(0, 4):   # Filter candidates whether other candidate is in crosshatched region or not
+                if cand_list[i] is None: pass
                 else:
-                    (prev, next) = adjRegion(cand_list[i-1].nodeDirection(delete))
-                    if not isinCrosshatched(cand_list[next-1], delete, cand_list[i-1]) \
-                           and not isinCrosshatched(cand_list[prev-1], delete, cand_list[i-1]):
-                        accept.append(cand_list[i-1])
+                    (prev, next) = adjRegion(cand_list[i].nodeDirection(delete))
+                    if not isinCrosshatched(cand_list[next], delete, cand_list[i]) \
+                           and not isinCrosshatched(cand_list[prev], delete, cand_list[i]):
+                        accept.append(cand_list[i])
+
             if len(accept) == 0: accept = cand_list[:]
+            
             minimum = float("inf")
-            for i in accept:           # Filter candidates by L1 distance from delete node
+            for i in accept:        # Filter candidates by L1 distance from delete node
                 l1 = abs(delete.x - i.x) + abs(delete.y - i.y)
                 if minimum > l1 :
                     minimum = l1
@@ -200,20 +205,20 @@ class QuadTree:
             else:
                 if node.y >= delete.y and replace.y >= delete.y:
                     # Both "node" and "replace" are in the positive side of x-axis of delete node
+                    ADJ(node.region[2], delete, replace, re_insert)
                     ADJ(node.region[3], delete, replace, re_insert)
-                    ADJ(node.region[4], delete, replace, re_insert)
                 elif node.y < delete.y and replace.y < delete.y:
                     # Both "node" and "replace" are in the nogative side of x-axis of delete node
-                    ADJ(node.region[2], delete, replace, re_insert)
+                    ADJ(node.region[0], delete, replace, re_insert)
                     ADJ(node.region[1], delete, replace, re_insert)
                 elif node.x >= delete.x and replace.x >= delete.x:
                     # Both "node" and "replace" are in the positive side of y-axis of delete node
+                    ADJ(node.region[1], delete, replace, re_insert)
                     ADJ(node.region[2], delete, replace, re_insert)
-                    ADJ(node.region[3], delete, replace, re_insert)
                 else:
                     # Both "node" and "replace" are in the negative side of y-axis of delete node
-                    ADJ(node.region[1], delete, replace, re_insert)
-                    ADJ(node.region[4], delete, replace, re_insert)
+                    ADJ(node.region[0], delete, replace, re_insert)
+                    ADJ(node.region[3], delete, replace, re_insert)
 
         def newRoot(subroot, delete, replace, rep_region, re_insert):
             (prev, next) = adjRegion(rep_region)
@@ -221,7 +226,7 @@ class QuadTree:
             ADJ(subroot.region[next], delete, replace, re_insert)
             if subroot.region[conj(rep_region)] == None:
                 subroot.Parent.region[conj(rep_region)] = subroot.region[rep_region]
-                subroot.region[rep_region] = None
+                subroot.region[rep_region] = None   # delete reference
                 return
             newRoot(subroot.region[conj(rep_region)], delete,
                     replace, rep_region, re_insert)
@@ -239,7 +244,7 @@ class QuadTree:
         newRoot(delete.region[candidate.nodeDirection(delete)], delete,
                 candidate, candidate.nodeDirection(delete), re_insert)
 
-        for i in range(1,5):      # Replace delete node with candidate node
+        for i in range(0, 4):      # Replace delete node with candidate node
             candidate.region[i] = delete.region[i]
         candidate.Parent = delete.Parent
 
