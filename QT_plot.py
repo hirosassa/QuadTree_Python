@@ -61,7 +61,6 @@ if __name__ == "__main__":
     lst = [(x[i], y[i]) for i in range(nodeNum)]
 
     qt = QT()
-    qt.makeOptQT(lst)
-    area = Rect((-100, -100), (100, 100))
-    QTdivision(qt,area)
-    
+    qt.makeOptQT(lst)    
+    area = Rect((max(x), max(y)), (min(x), min(y)))
+    QTdivision(qt,area)    

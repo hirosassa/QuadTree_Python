@@ -47,6 +47,7 @@ class QuadTree:
         else:
             node = self.root
             while True:
+
                 if new_node.x >= node.x and new_node.y >= node.y:  # NE region
                     if node.region[0] is None:
                         node.region[0]= new_node
@@ -85,6 +86,7 @@ class QuadTree:
                     stack.append(node.region[i])
                     node.region[i] = None       # delete reference
             self.insertNode(node)
+
         
     def searchNode(self, point):
         """
