@@ -44,7 +44,7 @@ if __name__ == "__main__":
     
     from QuadTree import QuadTree as QT
 
-    nodeNum = 500
+    nodeNum = 300
     
     # Generate random numbers from discrete uniform distribution.
     # x = np.random.random_integers(-100, 100, nodeNum)

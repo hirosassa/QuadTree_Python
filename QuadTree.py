@@ -250,7 +250,7 @@ class QuadTree:
             self.reinsertSubtree(node)
     
 if __name__ == '__main__':
-    import numpy as np                            
+    import numpy as np
                                                   
     nodeNum = 10                                  
     x = np.random.randint(-10, 10, nodeNum)       
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     lst = [(x[i], y[i]) for i in range(nodeNum)]  
                                                   
     qtree = QuadTree()                            
-    qtree.makeOptQT(lst)                          
+    qtree.makeOptQT(lst)    
     qtree.insertNode((-1, 6))
     qtree.insertNode((1, 2))
     
