@@ -1,0 +1,8 @@
+QuadTree implementation in python
+
+This is simple Point QuadTree implementation in python
+
+
+Requires:
+	Python 2.7
+	Matplotlib 1.1
